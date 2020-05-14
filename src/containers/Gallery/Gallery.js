@@ -6,41 +6,43 @@ const axios = require("axios").default
 
 class Gallery extends React.Component {
     state = {
-        images: []
+        images: [],
+        page: 1
     }
 
-    loadImages = (page) => {
-        console.log("I am going to load page" + page);
-        const pageParam = `&page=${page}`
-        const string = "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=02d12a45de3359bf358f67db6b70a927&tags=bikerace" + pageParam
+    loadImages = () => {
+        console.log("I am going to load page" + this.state.page);
+        // const pageParam = `&page=${this.state}`
+        // const string = "https://www.flickr.com/services/rest?method=flickr.photos.search&api_key=02d12a45de3359bf358f67db6b70a927&tags=bikerace,BoulderBikeTour"+ pageParam
         axios
-            .get(string)
+            .get("https://www.flickr.com/services/rest", {
+                params: {
+                    method: "flickr.photos.search",
+                    api_key: "02d12a45de3359bf358f67db6b70a927",
+                    tags: "bikerace,BoulderBikeTour",
+                    page: this.state.page,
+                    per_page: 40
+                }
+            })
             .then((message) => {
                 const parser = new DOMParser();
                 const xmlDoc = parser.parseFromString(message.data, "text/xml");
                 const newlist = [...this.state.images]
-                let count = 0
                 for (let i of xmlDoc.getElementsByTagName("photo")) {
                     const id = i.attributes.id.value;
                     const farm = i.attributes.farm.value;
                     const server = i.attributes.server.value;
                     const secret = i.attributes.secret.value;
                     newlist.push(`https://farm${farm}.staticflickr.com/${server}/${id}_${secret}_m.jpg`)
-                    if (count === 40) {
-                        break;
-                    }
                 }
-                this.setState({images: newlist})
+                this.setState({images: newlist, page:this.state.page+1})
             })
             .catch((err) => console.log(err))
     }
 
     loadAfterScroll = () => {
         if (window.innerHeight + document.documentElement.scrollTop === document.scrollingElement.scrollHeight) {
-            // console.log(images.length)
-            // console.log(images)
-            const pages = Math.round(this.state.images.length  / 40) + 1
-            this.loadImages(pages)
+            this.loadImages()
         }
     }
     componentDidMount() {
