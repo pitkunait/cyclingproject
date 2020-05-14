@@ -5,7 +5,7 @@ import Nav from "react-bootstrap/Nav";
 const NavBar = () => {
     return (
         <Navbar bg="light" expand="lg" className="navigation-color-strip">
-            <Navbar.Brand href="s/">Cycling Championship</Navbar.Brand>
+            <Navbar.Brand href="/">Cycling Championship</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">
